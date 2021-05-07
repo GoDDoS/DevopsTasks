@@ -1,0 +1,9 @@
+Требование | Минимальное требование | Как установить
+OS Ubuntu  | 20.04                  | https://ubuntu.com/tutorials/install-ubuntu-desktop#1-overview
+RAM        | 256MB                  | руками...
+CPU        | 1 ядро                 | руками...
+Python     | 3.8.5                  | https://www.python.org/downloads/
+pip3       | 20.0.2                 | sudo apt install python3-pip
+PostgreSQL | 12.6                   | sudo apt install postgresql
+psycopg2   | 2.8.6                  | pip3 install psycopg2-binary
+tkinter    | 8.6                    | sudo apt-get install python3-tk
