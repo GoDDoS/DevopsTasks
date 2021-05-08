@@ -2,5 +2,5 @@
 В целом описание проекта лежит в пдфке  
 1 задание соответственно в файле build_requirements.txt  
 Тесты для второго задания в папке spec  
-Запуск вот тут - https://pastebin.com/z82BSGNe  
+Запуск до установки вот тут - https://pastebin.com/z82BSGNe  
 3 задание в папке vagrant  
