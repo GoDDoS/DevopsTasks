@@ -1,0 +1,22 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "ubuntu/bionic64"
+
+  config.vm.provider "virtualbox" do |v|
+    v.name = "db_project"
+    v.memory = 256
+    v.cpus = 1
+  end
+
+  config.vm.synced_folder "../", "/home/vagrant/db_project"
+  config.vm.synced_folder "salt/roots/", "/srv/"
+
+  config.vm.provision :salt do |salt|
+    salt.minion_config = 'salt/minion'
+    salt.run_highstate = true
+  end
+
+end
