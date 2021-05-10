@@ -28,7 +28,7 @@ write_files:
       path:
         /data/config.py
     - content: |
-        import time
+        from datetime import datetime, timezone
         from flask import Flask
         import psycopg2
         from config import config
@@ -42,16 +42,18 @@ write_files:
         )
         cur = conn.cursor()
 
-        cur.execute("CREATE TABLE IF NOT EXISTS visits (visit_dt datetime)")
+        cur.execute("CREATE TABLE IF NOT EXISTS visits (visit_dt timestamp)")
+        conn.commit()
 
         app = Flask(__name__)
 
         @app.route("/")
         def hello():
-            cur.execute("INSERT INTO visits VALUES (%s)", (time.time()))
-            cur.execute("SELECT MAX(visit_dt) FROM vists")
+            cur.execute("INSERT INTO visits VALUES (%s)", (datetime.now(timezone.utc), ))
+            conn.commit()
+            cur.execute("SELECT MAX(visit_dt) FROM visits")
             last_visit = cur.fetchone()[0]
-            return "Hello! The page was visited at {} times".format(
+            return "Hello! The page was visited at {}".format(
                 last_visit
             )
 
@@ -61,7 +63,7 @@ write_files:
 
         app.run(host="0.0.0.0")
       path:
-        /data/app_a.py
+        /data/app_b.py
 
 runcmd:
   - [ cat, /data/app_a.py ]
@@ -69,4 +71,4 @@ runcmd:
   - [ python3, -m, pip, install, psycopg2-binary ]
   - [ export, LC_ALL=C.UTF-8 ]
   - [ export, LANG=C.UTF-8 ]
-  - [ nohup, python3, /data/app_a.py ]
+  - [ nohup, python3, /data/app_b.py ]

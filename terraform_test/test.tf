@@ -13,14 +13,19 @@ provider "yandex" {
   zone      = 
 }
 
+resource "random_password" "db_password" {
+  length  = 16
+  special = false
+}
+
 data "template_file" "app_a_config" {
   template = file("app_a/cloud_config.yaml")
 
   vars = {
-    db_hostname       = "${yandex_mdb_postgresql_cluster.postgres_db.host[0].fqdn}"
+    db_hostname = "${yandex_mdb_postgresql_cluster.postgres_db.host[0].fqdn}"
     db_user     = "default_user"
-    db_password = "default_password"
-    db_name = "app_database"
+    db_password = "${random_password.db_password.result}"
+    db_name     = "app_database"
   }
 }
 
@@ -28,10 +33,10 @@ data "template_file" "app_b_config" {
   template = file("app_b/cloud_config.yaml")
 
   vars = {
-    db_hostname       = "${yandex_mdb_postgresql_cluster.postgres_db.host[0].fqdn}"
+    db_hostname = "${yandex_mdb_postgresql_cluster.postgres_db.host[0].fqdn}"
     db_user     = "default_user"
-    db_password = "default_password"
-    db_name = "app_database"
+    db_password = "${random_password.db_password.result}"
+    db_name     = "app_database"
   }
 }
 
@@ -67,7 +72,7 @@ resource "yandex_compute_instance" "vm-1" {
 }
 
 resource "yandex_compute_instance" "vm-2" {
-  name = "terraform1"
+  name = "terraform2"
 
   resources {
     cores         = 2
@@ -155,7 +160,7 @@ resource "yandex_lb_network_load_balancer" "balancer" {
         path = "/ping"
       }
     }
-   }
+  }
 }
 
 resource "yandex_mdb_postgresql_cluster" "postgres_db" {
@@ -179,7 +184,7 @@ resource "yandex_mdb_postgresql_cluster" "postgres_db" {
 
   user {
     name     = "default_user"
-    password = "default_password"
+    password = random_password.db_password.result
     permission {
       database_name = "app_database"
     }

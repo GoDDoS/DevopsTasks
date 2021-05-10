@@ -28,7 +28,7 @@ write_files:
       path:
         /data/config.py
     - content: |
-        import time
+        from datetime import datetime, timezone
         from flask import Flask
         import psycopg2
         from config import config
@@ -41,6 +41,7 @@ write_files:
             port=6432
         )
         cur = conn.cursor()
+        conn.commit()
 
         cur.execute("CREATE TABLE IF NOT EXISTS visits (visit_dt timestamp)")
 
@@ -50,7 +51,8 @@ write_files:
         def hello():
             cur.execute("SELECT COUNT(*) FROM visits")
             total_visits = cur.fetchone()[0]
-            cur.execute("INSERT INTO visits VALUES (%s)", (time.time()))
+            cur.execute("INSERT INTO visits VALUES (%s)", (datetime.now(timezone.utc), ))
+            conn.commit()
             return "Hello! The page was visited {} times".format(
                 total_visits
             )
